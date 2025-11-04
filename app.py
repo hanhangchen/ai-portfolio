@@ -20,20 +20,30 @@ st.markdown("""
 st.markdown("<h1 class='header'>AI Portfolio Pro</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center; color:#888;'>专为海外华人 & 留学生定制 | 78% 用户年化收益</p>", unsafe_allow_html=True)
 
-col1, col2 = st.columns(2)
-with col1:
-    risk = st.selectbox("📊 风险等级", ["保守型 Conservative", "平衡型 Moderate", "进取型 Aggressive"])
-with col2:
-    amount = st.number_input("💰 投资金额 ($)", 1000, 500000, 10000, step=1000)
-
+# ETF 组合字典（修复！）
 portfolios = {
-    "保守型 Conservative": {"VTI": 0.4, "BND": 0.6},
-    "平衡型 Moderate": {"VTI": 0.6, "QQQ": 0.4},
-    "进取型 Aggressive": {"QQQ": 0.7, "ARKK": 0.3}
+    "Conservative": {"VTI": 0.4, "BND": 0.6},
+    "Moderate": {"VTI": 0.6, "QQQ": 0.4},
+    "Aggressive": {"QQQ": 0.7, "ARKK": 0.3}
 }
 
-if st.button("🚀 一键生成专业组合", type="primary"):
-    p = portfolios[risk.split()[0]]
+col1, col2 = st.columns(2)
+with col1:
+    risk = st.selectbox("风险等级", ["保守型 Conservative", "平衡型 Moderate", "进取型 Aggressive"])
+with col2:
+    amount = st.number_input("投资金额 ($)", 1000, 500000, 10000, step=1000)
+
+# 唯一按钮 + 修复映射
+if st.button("一键生成专业组合", type="primary"):
+    # 映射中文 → 英文键
+    risk_map = {
+        "保守型": "Conservative",
+        "平衡型": "Moderate",
+        "进取型": "Aggressive"
+    }
+    risk_key = risk.split()[0]  # 取中文
+    p = portfolios[risk_map[risk_key]]
+    
     allocation = {k: amount * v for k, v in p.items()}
     
     # 专业卡片
@@ -56,13 +66,13 @@ if st.button("🚀 一键生成专业组合", type="primary"):
     # 下载
     df = pd.DataFrame({"ETF": p.keys(), "比例": p.values(), "金额($)": allocation.values()})
     csv = df.to_csv(index=False).encode()
-    st.download_button("📥 下载投资报告 (CSV)", csv, "AI_Portfolio_Pro.csv", "text/csv")
+    st.download_button("下载投资报告 (CSV)", csv, "AI_Portfolio_Pro.csv", "text/csv")
 
 # 信任标签
 st.markdown("---")
 st.markdown("""
 <div style='text-align:center;'>
-    <p>🔒 银行级加密 | 📈 历史回测 12% 年化 | 🌍 服务 500+ 华人家庭</p>
+    <p>银行级加密 | 历史回测 12% 年化 | 服务 500+ 华人家庭</p>
     <p style='color:#ffd700;'><strong>£49/月 · 7天免费试用 · 随时取消</strong></p>
 </div>
 """, unsafe_allow_html=True)
